@@ -43,7 +43,7 @@ Continuous Integration
 [Jenkins] (http://jenkins-ci.org/)  
 [Bamboo] (https://www.atlassian.com/software/bamboo)
 
-[Monitoring and Measurement
+Monitoring and Measurement
 -
 [Graphite] (https://github.com/graphite-project)  
 [StatsD] (https://github.com/etsy/statsd/)  
