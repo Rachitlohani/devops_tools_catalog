@@ -11,7 +11,7 @@ Log management
 [rsyslog] (http://www.rsyslog.com/)  
 [Logstash] (http://logstash.net/)  
 [Graylog2] (http://graylog2.org/)  
-
+[Splunk] (http://www.splunk.com/)
 Deployment
 -
 [Fabric] (http://fabfile.org)  
