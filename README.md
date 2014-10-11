@@ -1,3 +1,5 @@
+Purpose of this project is to list a few good projects under the appropriate sections and then create a reference documents( sample code,sample implementations and some reading materials). 
+
 
 Configuration Management
 -
