@@ -12,6 +12,21 @@ Log management
 [Logstash] (http://logstash.net/)  
 [Graylog2] (http://graylog2.org/)  
 [Splunk] (http://www.splunk.com/)
+[Logentries] (https://logentries.com/)
+[Papertrail] (https://papertrailapp.com/)
+[fluentd] (http://www.fluentd.org/)
+[Loggly] (http://loggly.com/)
+[graylog2] (http://graylog2.org/)
+[Kafka] (http://kafka.apache.org/index.html)
+[Scribe] (https://github.com/facebook/scribe/)
+[Syslog-NG] (http://www.balabit.com/network-security/syslog-ng)
+[Sentry] (https://github.com/getsentry/sentry)
+[ELSA] (https://code.google.com/p/enterprise-log-search-and-archive/)
+[Stackify] (http://www.stackify.com/)
+[SumoLogic] (http://www.sumologic.com/)
+[Rsyslog] (http://www.rsyslog.com/)
+[Flume] (https://cwiki.apache.org/confluence/display/FLUME)
+
 Deployment
 -
 [Fabric] (http://fabfile.org)  
