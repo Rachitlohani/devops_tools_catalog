@@ -21,6 +21,7 @@ Central Controller
 -
 [Func] (https://fedorahosted.org/func/)  
 [Fabric] (http://fabfile.org)  
+[Rundeck] (http://rundeck.org/)
 
 Continuous Integration
 -
