@@ -1,0 +1,253 @@
+t
+
+
+Purpose of the document 
+The goal of this document is to define and delineate the direction,effort and the outcome of the monitoring effort that ops is working on. 
+
+The measure of excellence 
+the success will be measured by the various operational attributes as mentioned below :
+
+Metric	Meaning	How do we measure	Success Definition
+MTTD(Mean Time To Discover) 	The average time it takes to discover the issue.	 This will be a part of the RCA, where we will see when it did it actually start and when/how were we notified.	if we get an automated monitoring alert before it turns into an incident.
+MTTD(Mean Time To Diagnose) 	 The average time it takes to diagnose the problem	This will be recorded by IOC as a part of their standard incident management.	The oncall is able to diagnose the issue using the monitoring and log aggregation tools that we have.
+MTTR(Mean Time To Repair) 	 The average time it takes to fix a problem	This will be a part of the macgyver alert that we send out.	The Oncall is able to find and follow the SOP to resolve the issue.
+MTBF(Mean Time Between Failures) 	 The average time between failure of service(average time between two failures)	We track it using uptime and response time.	
+High uptime and great user experience index (new-relic).
+*uptime = the site was up and performing optimally. Latencies and error are considered as perceived downtime.
+Misery Index	How many pages did the oncall Engineer get	We use pager duty and run a weekly report to see how the week was	If the pages continue to go down, as we fix issues or put self-healing code on the machines then it means that we are moving in the right direction.
+
+Incident – Impact and mitigation :
+
+ We breakdown incidents into 4 tiers and try to figure out a way to put the right checks and automation in place to lower the criticality of the issue. The goal is to breakdown every failure into small failures and then solve them by a self-healing system.
+Operations > Monitoring @Mint > impact.png
+
+
+Monitoring progression 
+We started with reactive monitoring and matured to Proactive monitoring. The next big thing in terms of monitoring would be predictive monitoring
+Operations > Monitoring @Mint > image2015-6-12 11:55:35.png
+
+Type of monitoring
+Explanation
+Sequence of Events
+Merits 
+Demerits
+Impact on excellence
+Reactive Monitoring
+You always have to start the investigation from the top and then find out the issue.  
+Got an alert mint is down. Will take a look to figure out what went wrong
+we got the customer facing alert.
+The investigation always starts from top and every part of infra has to be validated, thus this increases the MTTR.
+MTTD:Low
+MTTDg:High
+MTTR:high
+MTBF:No impact
+Misery Index:high
+Proactive Monitoring
+The offending part of the infra will alert you too so that  ops can take relevant action. Reduces the turn around time
+Got an alert that the GC times are just too high on the layers and also that the latency on mint is high
+We got the the customers perception alert with what is causing it. Now we can directly fix the issue and get the site up and running.
+There was still an incurred outage, I wish the app would have notified me with the precursor events.
+MTTD:Low
+MTTDg:Low
+MTTR:Low
+MTBF:No impact
+Misery Index:high
+Predictive Monitoring
+Any degradation with the customer impact will be reported. 
+Got an alert that the aggregate CPU on proxy layer is very high (95% near capacity). Need to investigate before it comes an incident.
+The issue was resolved before it impacted a large userbase. 
+Requires the Ops team to know and understand the application.Ops team should understand the app so that they can put the right alerts and monitoring in the app.  
+MTTD:Low
+MTTDg:Low
+MTTR:Low
+MTBF:High
+Misery Index:low
+
+Activities involved in Monitoring 
+                                                                                                                                                         
+                                                               Operations > Monitoring @Mint > monitoring.png
+
+
+The Present State
+ Migration to AWS was a big leap and that not only changed the way how we deploy but also changed the way how we monitor. A lot of work was done to accomate the dynamic nature of the environment. New tools were explored and new stats were discovered and monitored. Following is the list of monitoring and alerting tools that we have in place. 
+
+Tools that we use 
+
+                                                                                                                                                                                          Operations > Monitoring @Mint > monitoring_pyramid.png
+
+
+System
+Details
+Endpoint
+Future
+Icinga
+system level monitoring (disk,CPU,memory)
+https://mon.aws.mint.com/
+This will be used for infrastructure host level monitoring
+Grafana/Graphite
+Business Dashboard and pod level data
+https://gfti.aws.mint.com/
+Due to the feature limitations on new-relic we will keep it around, once we get the slice and dice feature on New-relic we will look into moving all data to new-relic.
+Seyren
+Alert on the metrics aggregated on Grafana/Graphite
+http://gfti.aws.mint.com/seyren/
+This goes with Grafana. If grafana is around we will need this to monitor the numbers.
+New-relic
+User and Jvm level data,deployment tracker
+rpm.newrelic.com
+Intuit standard tool for web app monitoring.
+Splunk
+log aggregator
+https://search.kaos.a.intuit.com:8000/en-US/app/launcher/home
+Intuit standard tool for log aggreation and analysis.
+Pagerduty
+alerting system
+https://mint.pagerduty.com/dashboard
+Intuit standard for paging.
+cloudwatch
+Monitor ELB,surge-queu length,
+https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#
+AWS default for monitoring aws services.
+custom scripts
+we have a few custom scripts that we use to validate and test the health of the environment.
+
+we will migrate the monitoring scripts to new-relic and the validation scripts to jenkins.
+  
+
+How do we get to the "pre-Predictive" Level
+Getting to the next level is all about understanding the application and putting in the right hooks and monitors that will tell us before hand if something is about to happen. This will be a collaborative effort of dev and ops to come up with metrics that we can translate into direct customer impact, trend them realtime, and put alert for the relevant threshold.
+
+Areas of improvements 
+FMEA 
+A Dev and Ops effort, where we list down all the webproperties , services and their potential failures,impact on other services and eventually how can they affect the users. 
+Tier
+Potential Failure Mode
+Potential Effect(s) of Failure
+RPN 
+Sev
+Potential Cause(s)/ Mechanism(s) of Failure
+Recommended Action(s)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+More JMX monitoring  
+JVM has built in instrumentations to manage and monitor java apps. Once the stats are published we can write scripts that will query the mbeans and fetch the value, the biggest benefit is the real time visibility that we get with no extra logging. Logging is great but we have to be wary of the I/O overhead in production. In our case we send the logs to splunk which takes a while to process and present them. We need to start the conversations with the dev teams to see if we can leverage the JMX for critical stats that will signal us if something is amiss with the JVM. A few benefits are better management of the app, for intance we can change the size of the threadpool,logging level,kill a connection all without restarting the app. We can instrument <key,value> monitoring with new-relic and splunk.So, we will get an overview of the app using JMX and for detailed we will always have splunk logs. 
+Alerts on JMX stats
+Once we have the stats on the JMX, we can write custom scripts or just configure the new-relic agent to query for the new beans and report it back to the new-relic dashboard. This will be a near-realtime monitoring solution. 
+Impact definition of the various metrics 
+Ops needs to work with Dev hand in hand to determine all the stats that we need to know and monitor. The application behaves a certain way before it is about to awry, we need our alerts to notify the on call then so that he can take corrective actions and prevent an incident. 
+
+
+
+
+
+Checks we have on Icinga
+[check_sls_queue_length
+[check_repl_lag
+[check_read_only_on
+[check_stat
+[check_mcpu_perf
+[check_mcpu_perf_pad
+[check_mcpu_high
+[check_mcpu_high_pad
+[check_mcpu_perf_85
+[check_console
+[check-iops
+[check-db-size
+[check_db_system_thread
+[check-log-slave-updates
+[check_my_backup
+[check_zetta
+[check_whisper
+[check_memory
+[check_allmem
+[check_active_mem
+[check_load
+[check_load_50
+[check_disk
+[check_disk_db
+[check_db_load
+[check_load
+[check_ntp
+[check_swap
+[check_swap_db
+[check_nfs_disk
+[check_nfs_mount
+[check_zombie_procs
+[check_total_procs
+[check_proc_mongod
+[check_proc_redis
+[check_proc_carbon-cache
+[check_proc_cron
+[check_proc_snmpd
+[check_proc_gmond
+[check_proc_sec
+[check_proc_syslog
+[check_proc_puppet
+[check_proc_web
+[check_proc_service
+[check_proc_servicelayer
+[check_proc_notification
+[check_proc_encryption
+[check_proc_oldencryption
+[check_proc_process
+[check_proc_octane
+[check_proc_activemq
+[check_proc_tools
+[check_proc_propane
+[check_proc_propane_importer
+[check_propane_processing
+[check_propane_error_files
+[check_dispatcher_timestamp
+[check_propane_files
+[check_importer_timestamps
+[check_heartbeat
+[check_uptime
+[check_reboot
+[check-connection-time
+[check-slave-io
+[check-slave-sql
+[check-threads-connected
+[check-slave-lag
+[check-connection-time
+[check-temp-tables
+[check-slow-queries
+[check_mysql_port
+[check-cc-autorefresh
+[check_threads_running
+[check_percona_replication_delay
+[check_fi_login
+[check_tomcat_threads
+[check_deploy_logsize
+[check_web_log
+#[check_alpha_log
+[check_alpha_log
+[check_notification_log
+[check_octane_log
+[check_process_log
+[check_importer_log
+[check_layer_log
+[check_dispatcher_log
+[check_squid
+[check_web_fatals
+[check_sls_queues
+[check_activemq
+[check_web_curl
+[check_rest_curl
+[check_proxy_curl
+[check_network
+[check_iam_connect
+
